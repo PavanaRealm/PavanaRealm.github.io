@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Pavani Yalla — AI Engineer</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --border: #1e1e2e;
+    --accent: #7c6af7;
+    --accent2: #f06a8e;
+    --text: #e8e8f0;
+    --muted: #6b6b82;
+    --tag-bg: #1a1a2e;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* NOISE OVERLAY */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 100;
+    opacity: 0.4;
+  }
+
+  /* GLOW BLOBS */
+  .blob {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(120px);
+    opacity: 0.12;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .blob-1 { width: 500px; height: 500px; background: var(--accent); top: -100px; left: -150px; }
+  .blob-2 { width: 400px; height: 400px; background: var(--accent2); bottom: 100px; right: -100px; }
+
+  /* LAYOUT */
+  .container { max-width: 860px; margin: 0 auto; padding: 0 2rem; position: relative; z-index: 1; }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 50;
+    padding: 1.2rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(10,10,15,0.7);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+  nav .logo {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.1rem;
+    color: var(--text);
+    text-decoration: none;
+    letter-spacing: 0.02em;
+  }
+  nav .logo span { color: var(--accent); }
+  nav ul { list-style: none; display: flex; gap: 2rem; }
+  nav ul a {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--muted);
+    text-decoration: none;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  nav ul a:hover { color: var(--text); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding-top: 5rem;
+  }
+  .hero-inner { max-width: 700px; }
+  .hero-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .hero-tag::before {
+    content: '';
+    width: 24px; height: 1px;
+    background: var(--accent);
+  }
+  h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2.8rem, 7vw, 5rem);
+    line-height: 1.05;
+    margin-bottom: 1.5rem;
+    letter-spacing: -0.02em;
+  }
+  h1 em {
+    font-style: italic;
+    color: var(--accent);
+  }
+  .hero-desc {
+    font-size: 1.05rem;
+    color: var(--muted);
+    max-width: 520px;
+    margin-bottom: 2.5rem;
+    line-height: 1.8;
+  }
+  .hero-cta {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .btn {
+    padding: 0.75rem 1.8rem;
+    border-radius: 4px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.78rem;
+    letter-spacing: 0.06em;
+    text-decoration: none;
+    transition: all 0.2s;
+    cursor: pointer;
+    border: none;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+  }
+  .btn-primary:hover { background: #9080ff; transform: translateY(-1px); }
+  .btn-outline {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+  .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* SECTION */
+  section { padding: 5rem 0; border-top: 1px solid var(--border); }
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 2.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+  h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    margin-bottom: 2rem;
+    letter-spacing: -0.02em;
+  }
+
+  /* SKILLS GRID */
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .skill-cell {
+    background: var(--surface);
+    padding: 1.4rem 1.6rem;
+    transition: background 0.2s;
+  }
+  .skill-cell:hover { background: var(--tag-bg); }
+  .skill-cell .skill-cat {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent2);
+    margin-bottom: 0.5rem;
+  }
+  .skill-cell .skill-items {
+    font-size: 0.88rem;
+    color: var(--text);
+    line-height: 1.8;
+  }
+
+  /* EXPERIENCE */
+  .exp-item {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 2rem;
+    margin-bottom: 2.5rem;
+    padding-bottom: 2.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .exp-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+  .exp-date {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--muted);
+    padding-top: 0.2rem;
+    line-height: 1.6;
+  }
+  .exp-role {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.15rem;
+    margin-bottom: 0.3rem;
+  }
+  .exp-company {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--accent);
+    margin-bottom: 0.8rem;
+    letter-spacing: 0.06em;
+  }
+  .exp-desc {
+    font-size: 0.9rem;
+    color: var(--muted);
+    line-height: 1.8;
+  }
+  .exp-desc li { margin-bottom: 0.3rem; margin-left: 1.2rem; }
+
+  /* PROJECTS */
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+  .project-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.8rem;
+    transition: border-color 0.2s, transform 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .project-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .project-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .project-card:hover::before { opacity: 1; }
+  .project-name {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.1rem;
+    margin-bottom: 0.7rem;
+  }
+  .project-desc {
+    font-size: 0.87rem;
+    color: var(--muted);
+    line-height: 1.7;
+    margin-bottom: 1.2rem;
+  }
+  .tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+  .tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    padding: 0.25rem 0.6rem;
+    background: var(--tag-bg);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+  }
+
+  /* CONTACT */
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .contact-item {
+    background: var(--surface);
+    padding: 1.4rem 1.8rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    text-decoration: none;
+    transition: background 0.2s;
+  }
+  .contact-item:hover { background: var(--tag-bg); }
+  .contact-icon {
+    width: 36px; height: 36px;
+    background: var(--tag-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+  .contact-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.2rem;
+  }
+  .contact-value {
+    font-size: 0.88rem;
+    color: var(--text);
+  }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 2rem;
+    text-align: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .fade-up { animation: fadeUp 0.7s ease both; }
+  .delay-1 { animation-delay: 0.1s; }
+  .delay-2 { animation-delay: 0.2s; }
+  .delay-3 { animation-delay: 0.35s; }
+  .delay-4 { animation-delay: 0.5s; }
+
+  /* RESPONSIVE */
+  @media (max-width: 600px) {
+    .exp-item { grid-template-columns: 1fr; gap: 0.5rem; }
+    .contact-grid { grid-template-columns: 1fr; }
+    nav ul { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="blob blob-1"></div>
+<div class="blob blob-2"></div>
+
+<nav>
+  <a href="#" class="logo">Pavani<span>.</span></a>
+  <ul>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div class="container">
+  <div class="hero">
+    <div class="hero-inner">
+      <div class="hero-tag fade-up">M.Sc. Artificial Intelligence · BTU Cottbus-Senftenberg</div>
+      <h1 class="fade-up delay-1">Building <em>intelligent</em><br>systems that scale.</h1>
+      <p class="hero-desc fade-up delay-2">
+        I'm Pavani — an AI engineer passionate about data pipelines, RAG systems, 
+        and turning complex problems into clean, automated solutions. 
+        Currently seeking Werkstudent &amp; internship roles in Germany.
+      </p>
+      <div class="hero-cta fade-up delay-3">
+        <a href="mailto:syamapavani@gmail.com" class="btn btn-primary">Get in touch</a>
+        <a href="https://linkedin.com/in/yalla-pavani" target="_blank" class="btn btn-outline">LinkedIn →</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- SKILLS -->
+  <section id="skills">
+    <div class="section-label">Capabilities</div>
+    <h2>What I work with</h2>
+    <div class="skills-grid">
+      <div class="skill-cell">
+        <div class="skill-cat">Languages</div>
+        <div class="skill-items">Python · SQL · HTML/CSS</div>
+      </div>
+      <div class="skill-cell">
+        <div class="skill-cat">AI & ML</div>
+        <div class="skill-items">LLMs · RAG · NLP · Deep Learning · scikit-learn · TensorFlow</div>
+      </div>
+      <div class="skill-cell">
+        <div class="skill-cat">Data & APIs</div>
+        <div class="skill-items">REST APIs · ETL · JSON · Web Scraping · Data Validation</div>
+      </div>
+      <div class="skill-cell">
+        <div class="skill-cat">Frameworks</div>
+        <div class="skill-items">LangChain · Hugging Face · ChromaDB · spaCy · NLTK</div>
+      </div>
+      <div class="skill-cell">
+        <div class="skill-cat">Automation</div>
+        <div class="skill-items">Power Automate · Scripting · Scheduling · Pipelines</div>
+      </div>
+      <div class="skill-cell">
+        <div class="skill-cat">Reporting</div>
+        <div class="skill-items">KPI Dashboards · Analytics · Stakeholder Communication</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EXPERIENCE -->
+  <section id="experience">
+    <div class="section-label">Work History</div>
+    <h2>Experience</h2>
+
+    <div class="exp-item">
+      <div class="exp-date">Mar 2026<br>Present</div>
+      <div>
+        <div class="exp-role">Full Stack App Developer Intern</div>
+        <div class="exp-company">PAYTO Technologies UG · Remote, Germany</div>
+        <ul class="exp-desc">
+          <li>Built Python data extraction scripts and API integrations to standardize product data for internal analytics.</li>
+          <li>Created structured data flows improving feature usage visibility and KPI reporting.</li>
+          <li>Maintained documentation and process notes for reliable handoffs across the team.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="exp-item">
+      <div class="exp-date">Feb 2023<br>Sep 2023</div>
+      <div>
+        <div class="exp-role">Web Development Intern</div>
+        <div class="exp-company">Cloud Mellow</div>
+        <ul class="exp-desc">
+          <li>Implemented backend API connections and data processing logic for customer-facing workflows.</li>
+          <li>Improved data quality with validation checks and version-controlled automation scripts.</li>
+          <li>Collaborated cross-functionally to define requirements and document data integration touchpoints.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="exp-item">
+      <div class="exp-date">Apr 2024<br>Present</div>
+      <div>
+        <div class="exp-role">M.Sc. Artificial Intelligence</div>
+        <div class="exp-company">BTU Cottbus-Senftenberg · Germany</div>
+        <ul class="exp-desc">
+          <li>Modules: Machine Learning · Deep Learning · NLP · Data Mining · Computer Vision · Algorithm Design</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROJECTS -->
+  <section id="projects">
+    <div class="section-label">Work</div>
+    <h2>Projects</h2>
+    <div class="projects-grid">
+
+      <div class="project-card">
+        <div class="project-name">AI Data Collection Pipeline</div>
+        <div class="project-desc">Automated pipeline in Python to collect, clean, and structure data from multiple online sources and REST APIs. Modular architecture with error handling, quality validation, and scheduling.</div>
+        <div class="tags">
+          <span class="tag">Python</span><span class="tag">REST APIs</span><span class="tag">Web Scraping</span><span class="tag">Automation</span>
+        </div>
+      </div>
+
+      <div class="project-card">
+        <div class="project-name">RAG-Based Q&A System</div>
+        <div class="project-desc">End-to-end pipeline: document ingestion → chunking → embedding → vector indexing → retrieval → Gemini API response streaming. Built with LangChain, ChromaDB, and Hugging Face.</div>
+        <div class="tags">
+          <span class="tag">LangChain</span><span class="tag">ChromaDB</span><span class="tag">Gemini API</span><span class="tag">Vector DB</span>
+        </div>
+      </div>
+
+      <div class="project-card">
+        <div class="project-name">Deepfake & Fake News Detector</div>
+        <div class="project-desc">Multimodal detection system preprocessing large-scale datasets with NLP text pipelines using TF-IDF, NLTK, and spaCy. Evaluated with precision, recall, and F1-score metrics.</div>
+        <div class="tags">
+          <span class="tag">TensorFlow</span><span class="tag">NLP</span><span class="tag">spaCy</span><span class="tag">TF-IDF</span>
+        </div>
+      </div>
+
+      <div class="project-card">
+        <div class="project-name">Salary Predictor</div>
+        <div class="project-desc">ML web app that predicts salary based on years of experience. Built with scikit-learn regression model and deployed as an interactive web application.</div>
+        <div class="tags">
+          <span class="tag">Python</span><span class="tag">scikit-learn</span><span class="tag">Jupyter</span><span class="tag">ML</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <div class="section-label">Let's talk</div>
+    <h2>Get in touch</h2>
+    <div class="contact-grid">
+      <a href="mailto:syamapavani@gmail.com" class="contact-item">
+        <div class="contact-icon">✉</div>
+        <div>
+          <div class="contact-label">Email</div>
+          <div class="contact-value">syamapavani@gmail.com</div>
+        </div>
+      </a>
+      <a href="https://linkedin.com/in/yalla-pavani" target="_blank" class="contact-item">
+        <div class="contact-icon">in</div>
+        <div>
+          <div class="contact-label">LinkedIn</div>
+          <div class="contact-value">yalla-pavani</div>
+        </div>
+      </a>
+      <a href="tel:+4916336206349" class="contact-item">
+        <div class="contact-icon">☎</div>
+        <div>
+          <div class="contact-label">Phone</div>
+          <div class="contact-value">+49 163 362 0634</div>
+        </div>
+      </a>
+      <div class="contact-item">
+        <div class="contact-icon">📍</div>
+        <div>
+          <div class="contact-label">Location</div>
+          <div class="contact-value">Cottbus, Germany · Available immediately</div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<footer>
+  © 2026 Pavani Bhuvaneswari Yalla · M.Sc. AI · BTU Cottbus-Senftenberg
+</footer>
+
+</body>
+</html>
